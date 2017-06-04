@@ -16,6 +16,8 @@ android:
     - android-22
     - android-25
 
+    - sys-img-armeabi-v7a-android-22
+
 before_install:
   - echo "$ANDROID_HOME"
   - mkdir "$ANDROID_HOME/licenses" || true

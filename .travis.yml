@@ -32,4 +32,4 @@ before_script:
   
 notifications:
   email: false
-  slack: koraniar:MQ68xtahvXrsIEm4xxBLfImS --add notifications.slack
+  slack: koraniar:MQ68xtahvXrsIEm4xxBLfImS

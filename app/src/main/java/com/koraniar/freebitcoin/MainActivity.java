@@ -12,9 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    WebView mainWebView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //web
+
+        mainWebView = (WebView) findViewById(R.id.MainWebview);
+        mainWebView.loadUrl("https://freebitco.in");
+        WebSettings webSettings = mainWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
     }
 
     @Override
@@ -48,7 +59,11 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (mainWebView.canGoBack()) {
+                mainWebView.goBack();
+            }else{
+                super.onBackPressed();
+            }
         }
     }
 

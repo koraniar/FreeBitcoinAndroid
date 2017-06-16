@@ -180,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-            mainWebView.loadUrl("javascript:(function(){android.showToast('hello moto');})()");
             mainWebView.loadUrl(JavaScript.GlobalTestLogin);
         } else if (id == R.id.nav_send) {
             mainWebView.loadUrl(JavaScript.FreeTestSound);

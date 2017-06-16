@@ -1,9 +1,12 @@
 package com.koraniar.freebitcoin;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,12 +19,17 @@ import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import com.koraniar.freebitcoin.Enums.RequestType;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String LOG_TAG = "FreeMain";
 
     WebView mainWebView = null;
+    boolean loggedIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +63,69 @@ public class MainActivity extends AppCompatActivity
         WebSettings webSettings = mainWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         mainWebView.addJavascriptInterface(new WebAppInterface(this), "android");
+        mainWebView.setWebViewClient(new MyWebViewClient());
     }
 
     public class WebAppInterface {
         Context mContext;
-
-        /** Instantiate the interface and set the context */
         WebAppInterface(Context c) {
             mContext = c;
         }
 
-        /** Show a toast from the web page */
         @JavascriptInterface
-        public void showToast(String toast) {
-            Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+        public void getPageInfo(int requestCode, String info) {
+            switch (requestCode){
+                case RequestType.LoginTest:
+                    if(info.equals("0")){
+                        loggedIn = true;
+                        mainWebView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mainWebView.loadUrl(JavaScript.FreeGetCountDown);
+                            }
+                        });
+                    } else {
+                        loggedIn = false;
+                    }
+                    break;
+                case RequestType.GetCountDown:
+                    Toast.makeText(mContext, info + " minutes", Toast.LENGTH_SHORT).show();
+                    if(info.equals("")){
+                        //time is over
+                    } else {
+                        //minutes to send notification
+                    }
+                    break;
+                default:
+                    Toast.makeText(mContext, "Request Code is not valid", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+        }
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+
+        public void onPageFinished(WebView view, String url) {
+            Log.e(LOG_TAG, "onPageFinished");
+            Log.e(LOG_TAG, url);
+            mainWebView.loadUrl(JavaScript.GlobalTestLogin);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Log.e(LOG_TAG, "shouldOverrideUrlLoading");
+            Log.e(LOG_TAG, url);
+            Log.e(LOG_TAG, Uri.parse(url).getHost());
+            if (Uri.parse(url).getHost().equals("freebitco.in")) {
+                // This is my web site, so do not override; let my WebView load the page
+                return false;
+            }
+            return false;
+            // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
+            //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            //startActivity(intent);
+            //return true;
         }
     }
 
@@ -124,8 +181,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
             mainWebView.loadUrl("javascript:(function(){android.showToast('hello moto');})()");
+            mainWebView.loadUrl(JavaScript.GlobalTestLogin);
         } else if (id == R.id.nav_send) {
-            mainWebView.loadUrl("javascript:(function(){document.getElementById('test_sound').click();})()");
+            mainWebView.loadUrl(JavaScript.FreeTestSound);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -17,4 +17,7 @@ public final class JavaScript {
     public static final String FreeGetCountDown = "javascript:(function(){" +
                 "android.getPageInfo(" + RequestType.GetCountDown + ",$('#time_remaining').find('.countdown_section').find('.countdown_amount').first().text());" +
             "})()";
+    public static final String FreeAddListenerToRollButton = "javascript:(function(){$('#free_play_form_button').click(function() {" +
+                "android.getPageInfo(" + RequestType.RollButtonPressed + ",'OK')" +
+            "});})()";
 }

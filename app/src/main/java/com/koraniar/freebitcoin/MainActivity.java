@@ -33,6 +33,9 @@ import android.widget.Toast;
 
 import com.koraniar.freebitcoin.Enums.RequestType;
 
+import java.util.concurrent.TimeUnit;
+import android.os.Handler;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String LOG_TAG = "FreeMain";
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             @Override
                             public void run() {
                                 mainWebView.loadUrl(JavaScript.FreeGetCountDown);
+                                mainWebView.loadUrl(JavaScript.FreeAddListenerToRollButton);
                             }
                         });
                     } else {
@@ -104,6 +108,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Toast.makeText(mContext, "We call you on " + Integer.toString(time) + " minutes", Toast.LENGTH_SHORT).show();
                         NotificationAdm.showClaimBtcNotification(mContext, time*60000, 101);
                     }
+                    break;
+                case RequestType.RollButtonPressed:
+                    Log.e(LOG_TAG, "button pressed");
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainWebView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mainWebView.loadUrl(JavaScript.FreeGetCountDown);
+                                }
+                            });
+                        }
+                    }, 3000);
+
                     break;
                 default:
                     Toast.makeText(mContext, "Request Code is not valid", Toast.LENGTH_SHORT).show();

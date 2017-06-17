@@ -7,4 +7,5 @@ package com.koraniar.freebitcoin.Enums;
 public final class RequestType {
     public static final int LoginTest = 1;
     public static final int GetCountDown = 2;
+    public static final int RollButtonPressed = 3;
 }

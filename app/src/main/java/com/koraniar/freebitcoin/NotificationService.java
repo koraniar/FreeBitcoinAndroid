@@ -1,12 +1,12 @@
 package com.koraniar.freebitcoin;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -18,7 +18,7 @@ import android.util.Log;
  * Created by Esteban on 6/16/2017.
  */
 
-public class NotificationsAdmin {
+public class NotificationService {
 
     private static final String LOG_TAG = "NotifAdm";
 
@@ -30,37 +30,28 @@ public class NotificationsAdmin {
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationService self = new NotificationService();
 
-            Notification notification = intent.getParcelableExtra("NOTIFICATION");
             Bundle extras = intent.getExtras();
             if(extras != null) {
-                int notificationId = extras.getInt("NOTIFICATION_ID");
-                notificationManager.notify(notificationId, notification);
+                try {
+                    int notificationId = extras.getInt("NOTIFICATION_ID");
+                    String className = extras.getString("ACTIVITY");
+                    Class<?> activity = Class.forName(className);
+                    self.showNotification(context, notificationId, "Free BTC available", "Tap to claim it!", activity);
+                }catch (ClassNotFoundException e){
+                    Log.e(LOG_TAG, "Class not founded");
+                }
             } else {
                 Log.e(LOG_TAG, "extras null");
             }
         }
     }
 
-    public void showClaimBtcNotification(Context context, long delay, int notificationId) {
-        NotificationCompat.Builder mBuilder =
-                (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_menu_camera)
-                        .setContentTitle("Free BTC available")
-                        .setContentText("Tap to claim it!")
-                        .setAutoCancel(true)
-                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        mBuilder.setContentIntent(activity);
-
-        Notification notification = mBuilder.build();
-
+    public void showClaimBtcNotification(Context context, long delay, int notificationId, String activity) {
         Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
         notificationIntent.putExtra("NOTIFICATION_ID", notificationId);
-        notificationIntent.putExtra("NOTIFICATION", notification);
+        notificationIntent.putExtra("ACTIVITY", activity);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
@@ -68,24 +59,26 @@ public class NotificationsAdmin {
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    public void showNotification(Context context, int notificationId, String Title, String Cotent) {
+    public void showNotification(Context context, int notificationId, String Title, String Cotent, Class activity) {
+        int color = context.getResources().getColor(R.color.colorMainNotification);
         NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_menu_camera)
+                        .setSmallIcon(R.drawable.ic_default_notification_icon)
+                        .setColor(color)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                                R.mipmap.ic_launcher_round))
                         .setContentTitle(Title)
                         .setContentText(Cotent)
                         .setAutoCancel(true)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 
-        Intent resultIntent = new Intent(context, MainActivity.class);
+        Intent resultIntent = new Intent(context, activity);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        //stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT );
         mBuilder.setContentIntent(resultPendingIntent);
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(notificationId, mBuilder.build());
     }
 

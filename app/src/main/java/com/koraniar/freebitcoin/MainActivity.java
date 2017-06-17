@@ -1,22 +1,9 @@
 package com.koraniar.freebitcoin;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,14 +20,13 @@ import android.widget.Toast;
 
 import com.koraniar.freebitcoin.Enums.RequestType;
 
-import java.util.concurrent.TimeUnit;
 import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String LOG_TAG = "FreeMain";
 
-    NotificationsAdmin NotificationAdm = new NotificationsAdmin();
+    NotificationService _notificationService = new NotificationService();
     WebView mainWebView = null;
     boolean loggedIn = false;
 
@@ -106,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if(!info.equals("")){
                         int time = (Integer.parseInt(info) + 1);
                         Toast.makeText(mContext, "We call you on " + Integer.toString(time) + " minutes", Toast.LENGTH_SHORT).show();
-                        NotificationAdm.showClaimBtcNotification(mContext, time*60000, 101);
+                        _notificationService.showClaimBtcNotification(mContext, time*60000, 101, "com.koraniar.freebitcoin.MainActivity");
                     }
                     break;
                 case RequestType.RollButtonPressed:
@@ -128,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(mContext, "Request Code is not valid", Toast.LENGTH_SHORT).show();
                     break;
             }
-
         }
     }
 
@@ -188,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if(id == 0){
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -206,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            NotificationAdm.showNotification(getApplicationContext(), 102, "Free BTC available", "Tap to claim it!");
+            _notificationService.showNotification(getApplicationContext(), 102, "Free BTC available", "Tap to claim it!", MainActivity.class);
         } else if (id == R.id.nav_share) {
             mainWebView.loadUrl(JavaScript.GlobalTestLogin);
         } else if (id == R.id.nav_send) {

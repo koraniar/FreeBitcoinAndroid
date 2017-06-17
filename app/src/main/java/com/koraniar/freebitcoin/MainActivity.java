@@ -173,8 +173,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if(id == 0){
-
+        }else if(id == R.id.action_reload_page){
+            mainWebView.loadUrl("https://freebitco.in");
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -186,13 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        if (id == R.id.nav_manage) {
             _notificationService.showNotification(getApplicationContext(), 102, "Free BTC available", "Tap to claim it!", MainActivity.class);
         } else if (id == R.id.nav_share) {
             mainWebView.loadUrl(JavaScript.GlobalTestLogin);

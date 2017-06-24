@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         //web
-
         mainWebView = (WebView) findViewById(R.id.MainWebview);
         mainWebView.loadUrl("https://freebitco.in");
         WebSettings webSettings = mainWebView.getSettings();

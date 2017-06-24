@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -70,7 +71,9 @@ public class NotificationService {
                         .setContentTitle(Title)
                         .setContentText(Cotent)
                         .setAutoCancel(true)
-                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setVibrate(new long[] { 0, 300, 300, 400 })
+                        .setLights(Color.RED, 3000, 3000);
 
         Intent resultIntent = new Intent(context, activity);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);

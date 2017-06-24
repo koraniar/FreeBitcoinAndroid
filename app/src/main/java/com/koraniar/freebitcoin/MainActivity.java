@@ -1,6 +1,7 @@
 package com.koraniar.freebitcoin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NotificationService _notificationService = new NotificationService();
     WebView mainWebView = null;
     boolean loggedIn = false;
+    boolean fromBoot = false;
+    boolean notificationEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .setAction("Action", null).show();
             }
         });*/
+
+        /*Intent intent = getIntent();
+
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                fromBoot = extras.getBoolean("FROM_BOOT", false);
+            } else {
+                Log.e(LOG_TAG, "extras null");
+            }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -66,15 +80,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public class WebAppInterface {
         Context mContext;
+
         WebAppInterface(Context c) {
             mContext = c;
         }
 
         @JavascriptInterface
         public void getPageInfo(int requestCode, String info) {
-            switch (requestCode){
+            switch (requestCode) {
                 case RequestType.LoginTest:
-                    if(info.equals("0")){
+                    if (info.equals("0")) {
                         loggedIn = true;
                         mainWebView.post(new Runnable() {
                             @Override
@@ -88,14 +103,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     break;
                 case RequestType.GetCountDown:
-                    if(!info.equals("")){
+                    if (!info.equals("")) {
+                        notificationEnabled = true;
                         int time = (Integer.parseInt(info) + 1);
                         Toast.makeText(mContext, "We call you on " + Integer.toString(time) + " minutes", Toast.LENGTH_SHORT).show();
-                        _notificationService.showClaimBtcNotification(mContext, time*60000, 101, "com.koraniar.freebitcoin.MainActivity");
+                        _notificationService.showClaimBtcNotification(mContext, time * 60000, 101, "com.koraniar.freebitcoin.MainActivity");
                     }
                     break;
                 case RequestType.RollButtonPressed:
-                    Log.e(LOG_TAG, "button pressed");
+                    notificationEnabled = false;
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -106,8 +122,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             });
                         }
-                    }, 3000);
-
+                    }, 2000);
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!notificationEnabled) {
+                                mainWebView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mainWebView.loadUrl(JavaScript.FreeGetCountDown);
+                                    }
+                                });
+                            }
+                        }
+                    }, 4000);
                     break;
                 default:
                     Toast.makeText(mContext, "Request Code is not valid", Toast.LENGTH_SHORT).show();
@@ -149,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             if (mainWebView.canGoBack()) {
                 mainWebView.goBack();
-            }else{
+            } else {
                 super.onBackPressed();
             }
         }
@@ -172,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if(id == R.id.action_reload_page){
+        } else if (id == R.id.action_reload_page) {
             mainWebView.loadUrl("https://freebitco.in");
             return true;
         }

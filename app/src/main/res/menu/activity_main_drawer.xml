@@ -3,9 +3,25 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_default_notification_icon"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_multiply"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Multiply" />
+        <item
+            android:id="@+id/nav_lottery"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Lottery" />
+        <item
+            android:id="@+id/nav_refer"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Refer" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Profile" />
     </group>
 
     <item android:title="Communicate">

@@ -107,11 +107,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         notificationEnabled = true;
                         int time = (Integer.parseInt(info) + 1);
                         Toast.makeText(mContext, "We call you on " + Integer.toString(time) + " minutes", Toast.LENGTH_SHORT).show();
-                        _notificationService.showClaimBtcNotification(mContext, time * 60000, 101, "com.koraniar.freebitcoin.MainActivity");
+                        _notificationService.showClaimBtcNotification(mContext, time * 60000, 101, "Free BTC available", "Tap to claim it!", "com.koraniar.freebitcoin.MainActivity");
                     }
                     break;
                 case RequestType.RollButtonPressed:
                     notificationEnabled = false;
+                    _notificationService.showClaimBtcNotification(mContext, 61 * 60000, 101, "Free BTC", "This is a recordatory to play at freebitco.in", "com.koraniar.freebitcoin.MainActivity");
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -123,19 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             });
                         }
                     }, 2000);
-                    (new Handler()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!notificationEnabled) {
-                                mainWebView.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mainWebView.loadUrl(JavaScript.FreeGetCountDown);
-                                    }
-                                });
-                            }
-                        }
-                    }, 4000);
                     break;
                 default:
                     Toast.makeText(mContext, "Request Code is not valid", Toast.LENGTH_SHORT).show();
@@ -197,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_reload_page) {
@@ -211,13 +198,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_manage) {
-            _notificationService.showNotification(getApplicationContext(), 102, "Free BTC available", "Tap to claim it!", MainActivity.class);
+        if (id == R.id.nav_home) {
+            mainWebView.loadUrl(JavaScript.GoToHome);
+        } else if (id == R.id.nav_multiply) {
+            mainWebView.loadUrl(JavaScript.GoToMultiply);
+        } else if (id == R.id.nav_lottery) {
+            mainWebView.loadUrl(JavaScript.GoToLottery);
+        } else if (id == R.id.nav_refer) {
+            mainWebView.loadUrl(JavaScript.GoToRefer);
+        } else if (id == R.id.nav_profile) {
+            mainWebView.loadUrl(JavaScript.GoToProfile);
         } else if (id == R.id.nav_share) {
-            mainWebView.loadUrl(JavaScript.GlobalTestLogin);
+            _notificationService.showNotification(getApplicationContext(), 102, "Free BTC available", "Tap to claim it!", MainActivity.class);
         } else if (id == R.id.nav_send) {
             mainWebView.loadUrl(JavaScript.FreeTestSound);
         }

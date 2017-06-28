@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.SystemClock;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
@@ -38,8 +39,10 @@ public class NotificationService {
                 try {
                     int notificationId = extras.getInt("NOTIFICATION_ID");
                     String className = extras.getString("ACTIVITY");
+                    String title = extras.getString("TITLE");
+                    String message = extras.getString("MESSAGE");
                     Class<?> activity = Class.forName(className);
-                    self.showNotification(context, notificationId, "Free BTC available", "Tap to claim it!", activity);
+                    self.showNotification(context, notificationId, title, message, activity);
                 }catch (ClassNotFoundException e){
                     Log.e(LOG_TAG, "Class not founded");
                 }
@@ -49,10 +52,12 @@ public class NotificationService {
         }
     }
 
-    public void showClaimBtcNotification(Context context, long delay, int notificationId, String activity) {
+    public void showClaimBtcNotification(Context context, long delay, int notificationId, String title, String contentMessage, String activity) {
         Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
         notificationIntent.putExtra("NOTIFICATION_ID", notificationId);
         notificationIntent.putExtra("ACTIVITY", activity);
+        notificationIntent.putExtra("TITLE", title);
+        notificationIntent.putExtra("MESSAGE", contentMessage);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;

@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -70,12 +72,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         //web
+        CookieManager.getInstance().setAcceptCookie(true);
         mainWebView = (WebView) findViewById(R.id.MainWebview);
         mainWebView.loadUrl("https://freebitco.in");
         WebSettings webSettings = mainWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setSaveFormData(true);
+        webSettings.setSavePassword(true);
         mainWebView.addJavascriptInterface(new WebAppInterface(this), "android");
         mainWebView.setWebViewClient(new MyWebViewClient());
+        CookieSyncManager.createInstance(this.getBaseContext());
     }
 
     public class WebAppInterface {
@@ -145,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.e(LOG_TAG, "shouldOverrideUrlLoading");
             Log.e(LOG_TAG, url);
             Log.e(LOG_TAG, Uri.parse(url).getHost());
+            CookieSyncManager.getInstance().sync();
             if (Uri.parse(url).getHost().equals("freebitco.in")) {
                 // This is my web site, so do not override; let my WebView load the page
                 return false;
